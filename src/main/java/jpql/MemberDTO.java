@@ -23,9 +23,9 @@ public class MemberDTO {
     }
 
     public MemberDTO(String username, int age) {
-
-
         this.username = username;
         this.age = age;
     }
+
+
 }

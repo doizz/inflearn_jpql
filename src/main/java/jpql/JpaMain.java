@@ -16,15 +16,26 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
 
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setUsername("member1"+i);
+                member.setAge(i);
+                em.persist(member);
+            }
 
-            List<MemberDTO> result = em.createQuery("select new jpql.MemberDTO(m.username, m.age) from Member m ").getResultList();
+            em.flush();
+            em.clear();
 
-            MemberDTO memberDTO = result.get(0);
+            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(10)
+                    .getResultList();
+
+            System.out.println("result.size() = " + result.size());
+            for (Member member1 : result) {
+                System.out.println("member1 = " + member1);
+            }
 
             tx.commit();
         } catch(Exception e){
@@ -72,6 +83,11 @@ public class JpaMain {
  *   - select new MemberDTO from Member m
  *   - 패키지 명을 포함한 전체 클래스 명 입력
  *   - 순서와 타입이 일치하는 생성자 필요
+ *
+ *  - 페이징 API
+ *   - JPA는 페이징을 다음 두 API로 추상화
+ *   - setFirstResult(int startPosition) : 조회 시작위치 (0부터 시작)
+ *   - setMaxResults(int maxResult) 조회할 데이터 수
  *
  *
  */
