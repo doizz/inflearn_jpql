@@ -16,26 +16,28 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
 
-            for (int i = 0; i < 100; i++) {
-                Member member = new Member();
-                member.setUsername("member1"+i);
-                member.setAge(i);
-                em.persist(member);
-            }
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setAge(10);
+            member.setTeam(team);
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
+            String query = "select m from Member m left join m.team t";
+
+            List<Member> result = em.createQuery(query, Member.class)
                     .setFirstResult(1)
                     .setMaxResults(10)
                     .getResultList();
 
-            System.out.println("result.size() = " + result.size());
-            for (Member member1 : result) {
-                System.out.println("member1 = " + member1);
-            }
+
 
             tx.commit();
         } catch(Exception e){
@@ -88,6 +90,28 @@ public class JpaMain {
  *   - JPA는 페이징을 다음 두 API로 추상화
  *   - setFirstResult(int startPosition) : 조회 시작위치 (0부터 시작)
  *   - setMaxResults(int maxResult) 조회할 데이터 수
+ * - 조인
+ *  - 내부 조인 : select m from Member m [INNER] JOIN m.team t
+ *
+ *  - 외부 조인 : select m from Member m LEFT [OUTER] JOIN m.team t
+ *
+ *  - 세타 조인 : select count(m) from Member m, Team t where m.username = t.name
+ * - 조인 - ON절
+ *  - ON절을 활용한 조인 (JPA 2.1부터 지원)
+ *  - 1. 조인대상 필터링
+ *  - 2. 연관관계 없는 엔티티 외부 조인 (하이버네이트 5.1부터)
+ *
+ *  - 조인대상 필터링
+ *   - 예) 회원과 팀을 조인하면서, 팀 이름이 A인 팀만 조인
+ *   - JPQL : select m , t from Member m left join m.team t on t.name = 'A'
+ *   - SQL : select m.*, t.* from Member m left join Team t On m.team_id = t.id and t.name = 'A'
+ *
+ *  - 연관관계 없는 엔티티 외부 조인
+ *   - 예) 회원의 이름과 팀의 이름이 같은 대상 외부 조인
+ *   - JPQL : select m, t from Member m left join Team t on.m.username = t.name
+ *   - SQL : select m.* , t.* from Member m left join Team t ON  m.username = t.name
+ *
+ *
  *
  *
  */
