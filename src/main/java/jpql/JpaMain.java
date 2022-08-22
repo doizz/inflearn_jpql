@@ -111,7 +111,23 @@ public class JpaMain {
  *   - JPQL : select m, t from Member m left join Team t on.m.username = t.name
  *   - SQL : select m.* , t.* from Member m left join Team t ON  m.username = t.name
  *
+ *  - 서브 쿼리
+ *   - 나이가 평균 보다 많은 회원
+ *    - select m from Member m where m.age > (select avg(m2.age) from Member m2)
  *
+ *  - 서브쿼리 지원 함수
+ *   - [NOT] EXISTS (subquery) : 서브쿼리에 결과가 존재 하면 참
+ *    - (ALL | ANY | SOME) (subquery)
+ *    - ALL 모두 만족하면 참
+ *    - ANY , SOME : 같은 의미, 조건을 하나라도 만족하면 참
+ *
+ *   - [NOT] IN (subquery) : 서브쿼리의 결과중 하나라도 같은 것이 있으면 참
+ *
+ *  - JPA서브 쿼리 한게
+ *   - JPA는 where, having 절에서만 서브쿼리 사용 가능
+ *   - select 절도 가능 (하이버네이트에서 지원)
+ *   - FROM 절의 서브쿼리는 현제 JPQL에서 불가능
+ *    - 조인으로 풀 수 있으면 풀어서 해결
  *
  *
  */
