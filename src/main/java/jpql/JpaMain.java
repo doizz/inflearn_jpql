@@ -30,7 +30,7 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m from Member m left join m.team t";
+            String query = "select m from Member m where m.age IS NOT NULL";
 
             List<Member> result = em.createQuery(query, Member.class)
                     .setFirstResult(1)
@@ -54,7 +54,7 @@ public class JpaMain {
 /**
  * - JPQL 문법
  *  - select m from Member as m where m.age>18
- *  - 엔티티와 속성은 대소문자 구분 O
+ *  - 엔티티와 속성은 대소 문자 구분 O
  *  - JPQL키워드는 대소문자 구분 X
  *  - 엔티티 이름 사용, 테이블 이름이 아님
  *  - 별칭은 필수
@@ -129,5 +129,18 @@ public class JpaMain {
  *   - FROM 절의 서브쿼리는 현제 JPQL에서 불가능
  *    - 조인으로 풀 수 있으면 풀어서 해결
  *
+ *  - JPQL 타입표현
+ *   - 문자: 'HELLO','She"s'
+ *   - 숫자 : 10L(Long), 10D(Double), 10F(Float)
+ *   - Boolean: TRUE , FALSE
+ *   - ENUM : jpabook.Member.Admin(패키지명포함)
+ *   - 엔티티 타입 : TYPE(m) = Member(상속관계에서 사용)
+ *
+ *  - JPQL 기타
+ *   - SQL과 문법이 같은 식
+ *   - EXISTS, IN
+ *   - AND , OR , NOT
+ *   - =,>,>= , < , <= <>
+ *   - BETWWEN, LIKE, IS NULL
  *
  */
