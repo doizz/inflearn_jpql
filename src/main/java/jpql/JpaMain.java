@@ -30,13 +30,14 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m from Member m where m.age IS NOT NULL";
+            String query = "select case when m.age <=10 then '학생요금'" +
+                    " when m.age >= 60 then '경로요금'  else '일반요금' end from Member m";
 
-            List<Member> result = em.createQuery(query, Member.class)
-                    .setFirstResult(1)
-                    .setMaxResults(10)
-                    .getResultList();
+            List<String> result = em.createQuery(query, String.class).getResultList();
 
+            for(String s : result){
+                System.out.println("s = " + s);
+            }
 
 
             tx.commit();
@@ -142,5 +143,31 @@ public class JpaMain {
  *   - AND , OR , NOT
  *   - =,>,>= , < , <= <>
  *   - BETWWEN, LIKE, IS NULL
+ *
+ *  - 조건식 - CASE 식
+ *   - 기본 CASE 식
+ *    - select
+ *          case when m.age <= 10 then '학생요금'
+ *               when m.age >= 60 then '경로요금'
+ *               else '일반요금'
+ *            end
+ *        from Member m
+ *   - 단숙 CASE 식
+ *    - select
+ *          case t.name
+ *              when '팀A' then '인센티브110%'
+ *              when '팀B' then '인센티브120%'
+ *              else '인센티브105%'
+ *           end
+ *         from Team t
+ *  - COALESCE : 하나씩 조회해서 null이 아니면 반환
+ *   - select coalesce(m.username,'이름없는 회원') from Member m
+ *
+ *  - NULLIF : 두 값이 같은면 NULL반환, 다르면 첫번째값 반환
+ *   - select NULLIF(m.username, '관리자') from Member m
+ *
+ *
+ *
+ *
  *
  */
