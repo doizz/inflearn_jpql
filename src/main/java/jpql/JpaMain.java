@@ -1,9 +1,6 @@
 package jpql;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import java.util.List;
 
 public class JpaMain {
@@ -166,6 +163,20 @@ public class JpaMain {
  *  - NULLIF : 두 값이 같은면 NULL반환, 다르면 첫번째값 반환
  *   - select NULLIF(m.username, '관리자') from Member m
  *
+ *  - JPQL 기본 함수
+ *   - CONCAT (문자 두개를 더함 , || 파이프라인도 동일)
+ *   - SUBSTRING (문자 자르기)
+ *   - TRIM (앞뒤 문자 공백 없애기)
+ *   - LOWE, UPPER (소문자 , 대문자 변환)
+ *   - LENGTH (길이 구하기)
+ *   - LOCATE (문자열 찾기 locate('de','abcdef') )
+ *   - ABS, SQRT, MOD (계산 함수들)
+ *   - SIZE, INDEX(JPA 용도)
+ *
+ *  - 사용자 정의 함수 호출
+ *   - 하이버네이트는 사용전 방언에 추가해야 한다.
+ *    - 사용하는 DB방언을 상속받고 , 사용자 정의 함수를 등록한다.
+ *     - select function('group_concat','i.name) from Item i
  *
  *
  *
