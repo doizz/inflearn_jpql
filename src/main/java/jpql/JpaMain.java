@@ -1,6 +1,7 @@
 package jpql;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -14,28 +15,27 @@ public class JpaMain {
 
         try {
             Team team = new Team();
-            team.setName("teamA");
             em.persist(team);
 
             Member member = new Member();
             member.setUsername("member1");
-            member.setAge(10);
             member.setTeam(team);
-
             em.persist(member);
+
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setTeam(team);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            String query = "select case when m.age <=10 then '학생요금'" +
-                    " when m.age >= 60 then '경로요금'  else '일반요금' end from Member m";
+            String query = "select t.members From Team t`";
 
-            List<String> result = em.createQuery(query, String.class).getResultList();
+            Collection result = em.createQuery(query, Collection.class).getResultList();
 
-            for(String s : result){
-                System.out.println("s = " + s);
-            }
-
+            System.out.println("result = " + result);
 
             tx.commit();
         } catch(Exception e){
@@ -178,7 +178,49 @@ public class JpaMain {
  *    - 사용하는 DB방언을 상속받고 , 사용자 정의 함수를 등록한다.
  *     - select function('group_concat','i.name) from Item i
  *
+ *  - 경로 표현식
+ *   - .(점)을 찍어 객체 그래프를 탐색 하는 것
+ *   - select m.username ->상태필드
+ *       from Member m
+ *      join m.team t -> 단일 값 연관 필드
+ *      join m.orders o -> 컬렉션 값 연관 필드
+ *    where t.name = '팀A'
+ *  - 경로 표현식 용어 정리
+ *   - 상태필드 : 단순히 값을 저장하기 위한 필드
+ *   - 연관 필드 : 연관관계를 위한 필드
+ *    - 단일 값 연관 필드 : @ManyToOne , @OneToOne , 대상이 엔티티
+ *   - 컬렉션 값 연관 필드 : @OneToMany , @ManyToMany , 대상이 컬렉션
  *
+ *  - 경로 표현식 특징
+ *   - 상태필드 : 경로 탐색의 끝 , 탐색X
+ *   - 단일 값 연관 경로 : 묵시적 내부 조인
+ *   - 컬렉션 값 연관 경로 : 묵시적 내부 조인 발생 , 탐색X
+ *    - Form절에서 명시적 조인을 통해 별칭을 받으면 별칭을 통해서 탐색 가능
+ *  - 단일 값 연관 경로 탐색
+ *   - JPQL : select o.member from Order o
+ *   - SQL : select m.* from Orders o inner join Member m on o.member_id = m.id
+ *
+ *  - 명시적 조인 , 묵시적 조인
+ *   - 명시적 조인 : Join 키워드 직접 사용
+ *
+ *   - 묵시적 조인 : 경로 표현식에 의해 묵시적으로 SQL 조인 발생
+ *
+ *  - 경로 표현식 - 예제
+ *   - select o.member.team from Order o -> 성공
+ *   - select t.members from Team -> 성공
+ *   - select t.members.username from Team t -> 실패
+ *   - select m.username from Team t join t.members m -> 성공
+ *
+ *  - 경로 탐색을 사용한 묵시적 조인 시 주의사항
+ *   - 항상 내부 조인
+ *   - 컬렉션은 경로 탐색의 끝, 명시적 조인을 통해 별칭을 얻어야함
+ *   - 경로 탐색은 주로 select , where 절에서 사용하지만 묵시적 조인으로 인해 SQL의 from절에 영향을 줌
+ *
+ *  - 실무 조언
+ *   - 가급적 묵시적 조인 대신에 명시적 조인 사용
+ *   - 조인은 SQL 튜닝에 중요 포인트
+ *   - 묵시적 조인은 조인이 일어나는 상황을 한눈에 파악하기 어려움
+ *   
  *
  *
  */
