@@ -290,6 +290,28 @@ public class JpaMain {
  *    - 페치 조인은 객체 그래프를 유지할 때 사용하면 효과적
  *    - 여러 테이블을 조인해서 엔티티가 가진 모양이 아닌 전혀 다른 결과를내야 하면, 페치조인보다는 일반 조인
  *      을 사용하고 필요한 데이터들만 조회해서 DTO로 반환하는 것이 효과적
- *적 *
+ *
+ *   - 다형성 쿼리
+ *    - TYPE
+ *     - 조회대상을 특정 자식으로 한정
+ *     - 예) ITEM중에 Book, Movie를 조회해라
+ *
+ *    - [JPQL]
+ *     - select i from Item i where type(i) IN (Book, Movie)
+ *
+ *    - [SQL]
+ *     - select i from i where i.DTYPE in ('B','M')
+ *
+ *  - 엔티티 직접사용 - 기본 키 값
+ *   - JPQL에서 엔티티를 직접 사용하면 SQL에서 해당 엔티티의 기본 키 값을 사용
+ *
+ *   - [JPQL]
+ *    - select count(m.id) from Member m //엔티티의 아이디를 사용
+ *    - select count(m) from Member m // 엔티티를 직접 사용
+ *   - [SQL]
+ *    - select count(m.id) as cnt from Member m
+ *
+ *
+ *
  *
  */
