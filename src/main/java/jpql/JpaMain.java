@@ -41,12 +41,12 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m From Member m join fetch m.team";
+            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+                    .setParameter("username", "회원1")
+                    .getResultList();
 
-            List<Member> result = em.createQuery(query, Member.class).getResultList();
-
-            for (Member member : result){
-                System.out.println("member = " + member.getUsername() + " , " + member.getTeam().getName());
+            for (Member member : resultList) {
+                System.out.println("member = " + member);
             }
 
             tx.commit();
@@ -311,7 +311,17 @@ public class JpaMain {
  *   - [SQL]
  *    - select count(m.id) as cnt from Member m
  *
+ *  - JPQL - Named 쿼리
+ *   - Named 쿼리 - 정적 쿼라
+ *    - 미리 정의ㅐ서 이름을 부여해두고 사용하는 JPQL
+ *    - 정적 쿼리
+ *    - 어노테이션, XML에 정의
+ *    - 애플리케이션 로딩 시점에 초기화 후 재사용
+ *    - 애플리케이션 로딩 시점에 쿼리를 검증
  *
+ *  - Named쿼리 - 환경에 따른 설정
+ *   - XML이 항상 우선권을 가진다.
+ *   - 애플리케이션 운영 환경에 따른 XMl을 배포할 수 있다.
  *
  *
  */
